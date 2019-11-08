@@ -35,7 +35,7 @@ target=dati[,3]
 imcdiag(covariate,target)
 
 
-# Primo grafici
+# Primi grafici
 plot(dati$Fat.mass..kg.~dati$Weight..kg., ylim=c(0,12))
 hist(dati$Weight..kg., breaks=5)
 hist(dati$Fat.mass..kg., breaks=5)
@@ -68,10 +68,10 @@ cooksd <- cooks.distance(model);cooksd
 cutoff <- 4/((nrow(dati)-length(model$coefficients)-2))
 plot(model, which=4, cook.levels=cutoff)
 abline(h=cutoff)
-
 influential <- dati[cooksd >= cutoff,];influential 
 influ = dati[influential, ];influ                  
-filtered <- dati[cooksd < cutoff, ]  ;filtered               
+filtered <- dati[cooksd < cutoff, ]  ;filtered    
+#Modello senza osservazioni influenti
 model_r<-lm(Fat.mass..kg.~Weight..kg.+as.numeric(Date), data=filtered)
 summary(model_r)  # 0.6931 senza trasformata, 0.6933 con trasformata, 0.7376 con data e trasformata, 0.7364 senza trasformata
 
