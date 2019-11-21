@@ -4,6 +4,8 @@ library(car)
 library(gvlma)
 library(ggplot2)
 library(lubridate)
+options(scipen=999)
+
 
 # Dati
 dati<-read.table("C:/Users/F041/Downloads/weight.csv", header = TRUE, sep = ",")
@@ -22,7 +24,7 @@ require(corrgram)
 corrgram(dati, lower.panel = panel.cor, cex=1, cex.labels = 1)
 cor.test(dati[,3],dati[,2])
 
-# Controlo collinearità variabile con TOL sotto 0,3 vengolo tolte
+# Controllo collinearità variabile con TOL sotto 0,3 vengolo tolte
 target=dati[,3]
 covariate=dati[,c(2,4:6)]
 library(mctest)
@@ -96,7 +98,6 @@ gvlma(model)
 
 #Dopo
 gvlma(model_r) 
-#Non funziona su rmodel,  must be an lm object.
 
 #Trasfromazioni covariate?
 library(gam)
@@ -121,8 +122,7 @@ shapiro.test(rmodel$residuals) #accetta normalità dei residui
 
 logistico<-glm(dati$grasso_est~Weight..kg.+Date, data=dati)
 summary(logistico)
-R<-1-(logistico$deviance/logistico$null.deviance);R 
-
+exp(logistico$coefficients)
 
 # Correlazioni
 require(corrgram)
@@ -132,8 +132,10 @@ cor.test(filtered[,3],filtered[,2])
 #Grafico filtered
 plot(filtered$Fat.mass..kg.~filtered$Weight..kg., ylim=c(0,12))
 
-
-p2<-predict(rmodel,dati)
-plot(p2, dati$Fat.mass..kg.)
+#Confronto modello iniziale-finale
+pf<-predict(rmodel,dati)
+par(mfrow=c(1,2)) 
+plot(p,dati$Fat.mass..kg.)
+plot(pf, dati$Fat.mass..kg.)
 
   
