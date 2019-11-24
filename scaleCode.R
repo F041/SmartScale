@@ -11,12 +11,14 @@ options(scipen=999)
 dati<-read.table("C:/Users/F041/Downloads/weight.csv", header = TRUE, sep = ",")
 dati$Date<-as.Date(ymd_hms(dati$Date))
 dati$grasso_est<-ifelse(((dati$Fat.mass..kg./dati$Weight..kg.)*100)<12,1,0)
+altezza=1.68
+dati$BMI<-(dati$Weight..kg./(altezza^2))
 
 
 pacf(dati[,c(2,3)])
 dati$Weight..kg.<-as.numeric(dati$Weight..kg.)
 dati$Fat.mass..kg<-as.numeric(dati$Fat.mass..kg)
-altezza=1.68
+
 BMI=as.factor(dati$Weight..kg./(altezza^2));BMI
 
 # Correlazioni
@@ -39,6 +41,7 @@ imcdiag(covariate,target)
 
 # Primi grafici
 plot(dati$Fat.mass..kg.~dati$Weight..kg., ylim=c(0,12))
+plot(dati$Fat.mass..kg.~dati$BMI)
 hist(dati$Weight..kg., breaks=5)
 hist(dati$Fat.mass..kg., breaks=5)
 
@@ -117,7 +120,6 @@ par(mfrow=c(1,1))
 
 shapiro.test(rmodel$residuals) #accetta normalità dei residui
 
-
 ## Logistico, non molto sensato in caso di collinearità
 
 logistico<-glm(dati$grasso_est~Weight..kg.+Date, data=dati)
@@ -138,4 +140,8 @@ par(mfrow=c(1,2))
 plot(p,dati$Fat.mass..kg.)
 plot(pf, dati$Fat.mass..kg.)
 
-  
+# Attempt with intercept
+imp=509.1/2 #diviso due perché il BMI medio dello studio risulta il doppio del mio
+intercept=(altezza^2)/imp
+bio<-lm(I(Fat.mass..kg.-intercept)~0+Weight..kg., data=dati)
+summary(bio)
